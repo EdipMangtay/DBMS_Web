@@ -292,7 +292,3 @@ Sorun yaşarsanız:
 4. Veritabanı bağlantı ayarlarını kontrol edin
 
 ---
-
-**Hazırlayan**: Student System Development Team  
-**Versiyon**: 1.0  
-**Son Güncelleme**: 2026
