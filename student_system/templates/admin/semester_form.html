@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="bi bi-calendar"></i> {{ title }}</h2>
+            <p class="text-muted mb-0">Create a new academic semester</p>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar"></i> Semester Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="term_name" class="form-label fw-bold">
+                            <i class="bi bi-calendar3"></i> Term Name *
+                        </label>
+                        <input type="text" class="form-control" id="term_name" name="term_name" 
+                               value="{{ form.term_name.data or '' }}" 
+                               placeholder="e.g., Fall 2025" required>
+                        <small class="form-text text-muted">{{ form.term_name.description or 'e.g., Fall 2025' }}</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="start_date" class="form-label fw-bold">
+                            <i class="bi bi-calendar-event"></i> Start Date *
+                        </label>
+                        <input type="date" class="form-control" id="start_date" name="start_date" 
+                               value="{{ form.start_date.data.strftime('%Y-%m-%d') if form.start_date.data else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="end_date" class="form-label fw-bold">
+                            <i class="bi bi-calendar-x"></i> End Date *
+                        </label>
+                        <input type="date" class="form-control" id="end_date" name="end_date" 
+                               value="{{ form.end_date.data.strftime('%Y-%m-%d') if form.end_date.data else '' }}" required>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="bi bi-{{ 'person-plus' if not student else 'pencil' }}"></i> {{ title }}</h2>
+            <p class="text-muted mb-0">{{ 'Create a new student' if not student else 'Update student information' }}</p>
+        </div>
+        <a href="{{ url_for('admin.students') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header text-white">
+                <h5 class="mb-0"><i class="bi bi-person"></i> Student Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-bold">
+                            <i class="bi bi-person-badge"></i> Username *
+                        </label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                               value="{{ form.username.data or '' }}" required>
+                    </div>
+                    {% if not student %}
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-bold">
+                            <i class="bi bi-lock"></i> Password *
+                        </label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <label for="student_name" class="form-label fw-bold">
+                            <i class="bi bi-person"></i> Student Name *
+                        </label>
+                        <input type="text" class="form-control" id="student_name" name="student_name" 
+                               value="{{ form.student_name.data or (student.student_name if student else '') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="student_mail" class="form-label fw-bold">
+                            <i class="bi bi-envelope"></i> Email *
+                        </label>
+                        <input type="email" class="form-control" id="student_mail" name="student_mail" 
+                               value="{{ form.student_mail.data or (student.student_mail if student else '') }}" required>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin.students') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

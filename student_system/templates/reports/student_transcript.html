@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Student Transcript Report{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="bi bi-file-text"></i> Student Transcript Report</h2>
+            <p class="text-muted mb-0">Complete academic record</p>
+        </div>
+    </div>
+</div>
+
+{% if student %}
+<div class="alert alert-primary mb-4">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-person-circle fs-2 me-3"></i>
+            <div>
+                <strong>Student:</strong> {{ student.full_name }} 
+                <span class="badge bg-secondary ms-2">ID: {{ student.student_id }}</span>
+            </div>
+        </div>
+        {% if overall_avg %}
+        <div>
+            <strong>Overall Average:</strong> 
+            <span class="badge bg-success fs-6">{{ "%.2f"|format(overall_avg) }}%</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header text-white">
+        <h5 class="mb-0"><i class="bi bi-list-check"></i> Course Details</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                        <th>Credits</th>
+                        <th>Semester</th>
+                        <th>Student Average</th>
+                        <th>Class Average</th>
+                        <th>Letter Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in transcript %}
+                    <tr>
+                        <td><span class="badge bg-primary">{{ item.course_code }}</span></td>
+                        <td><strong>{{ item.course_name }}</strong></td>
+                        <td><span class="badge bg-secondary">{{ item.credits }} Credits</span></td>
+                        <td><i class="bi bi-calendar me-2"></i>{{ item.semester }}</td>
+                        <td>
+                            {% if item.student_average %}
+                                <strong class="text-primary">{{ "%.2f"|format(item.student_average) }}%</strong>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.class_average %}
+                                <span class="text-muted">{{ "%.2f"|format(item.class_average) }}%</span>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.letter_grade %}
+                                {% set grade_first = item.letter_grade[0] if item.letter_grade else '' %}
+                                <span class="badge bg-{{ 'success' if grade_first in ['A', 'B'] else 'warning' if grade_first == 'C' else 'danger' }} fs-6">
+                                    {{ item.letter_grade }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+                            <p class="text-muted">No transcript data available</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Section: {{ section.course.course_code }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2>
+                <i class="bi bi-collection"></i> {{ section.course.course_code }} - {{ section.course.course_name }}
+                <small class="text-muted">Section {{ section.section_number }}</small>
+            </h2>
+            <p class="text-muted mb-0">Manage section details and student grades</p>
+        </div>
+        <a href="{{ url_for('instructor.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Section Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="bi bi-calendar text-primary me-2"></i>
+                    <strong>Semester:</strong> {{ section.semester.display_name }}
+                </div>
+                <div class="mb-3">
+                    <i class="bi bi-clock text-primary me-2"></i>
+                    <strong>Schedule:</strong> {{ section.schedule or 'Not set' }}
+                </div>
+                <div class="mb-3">
+                    <i class="bi bi-geo-alt text-primary me-2"></i>
+                    <strong>Room:</strong> {{ section.room or 'Not set' }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-white bg-info">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <i class="bi bi-people-fill text-info me-2"></i>
+                    <strong>Total Students:</strong> 
+                    <span class="badge bg-info fs-6">{{ stats.total_students }}</span>
+                </div>
+                <div class="mb-3">
+                    <i class="bi bi-calculator text-success me-2"></i>
+                    <strong>Average Score:</strong> 
+                    <span class="badge bg-success fs-6">{{ "%.2f"|format(stats.avg_score) if stats.avg_score else 'N/A' }}</span>
+                </div>
+                <div class="mb-3">
+                    <i class="bi bi-arrow-up-circle text-success me-2"></i>
+                    <strong>Max Score:</strong> 
+                    <span class="badge bg-success fs-6">{{ "%.2f"|format(stats.max_score) if stats.max_score else 'N/A' }}</span>
+                </div>
+                <div>
+                    <i class="bi bi-arrow-down-circle text-warning me-2"></i>
+                    <strong>Min Score:</strong> 
+                    <span class="badge bg-warning fs-6">{{ "%.2f"|format(stats.min_score) if stats.min_score else 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header text-white">
+        <h5 class="mb-0"><i class="bi bi-people"></i> Enrolled Students</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Enrollment Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in enrollments %}
+                    <tr>
+                        <td><strong>#{{ enrollment.student.student_id }}</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ enrollment.student.full_name }}</strong>
+                                </div>
+                            </div>
+                        </td>
+                        <td><i class="bi bi-envelope me-2"></i>{{ enrollment.student.email }}</td>
+                        <td><i class="bi bi-calendar me-2"></i>{{ enrollment.enroll_date }}</td>
+                        <td>
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('instructor.manage_grades', enrollment_id=enrollment.enrollment_id) }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-pencil-square"></i> Manage Grades
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+                            <p class="text-muted">No students enrolled</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if pagination.pages > 1 %}
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if pagination.has_prev %}
+                        <li class="page-item"><a class="page-link" href="?page={{ pagination.prev_num }}">Previous</a></li>
+                    {% endif %}
+                    {% for page_num in pagination.iter_pages() %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if pagination.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ pagination.next_num }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

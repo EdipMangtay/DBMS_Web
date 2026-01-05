@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Grades{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2>
+                <i class="bi bi-pencil-square"></i> Manage Grades
+                <small class="text-muted">{{ enrollment.student.full_name }} - {{ enrollment.section.course.course_code }}</small>
+            </h2>
+            <p class="text-muted mb-0">Enter and update student grades</p>
+        </div>
+        <a href="{{ url_for('instructor.view_section', section_id=enrollment.section_id) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header text-white">
+                <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Enter New Grade</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="assessment_type" class="form-label fw-bold">
+                            <i class="bi bi-file-text"></i> Assessment Type *
+                        </label>
+                        <input type="text" class="form-control" id="assessment_type" name="assessment_type" 
+                               value="{{ form.assessment_type.data or '' }}" 
+                               placeholder="e.g., Midterm, Final, Quiz 1" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="score" class="form-label fw-bold">
+                                    <i class="bi bi-star"></i> Score *
+                                </label>
+                                <input type="number" step="0.01" class="form-control" id="score" name="score" 
+                                       value="{{ form.score.data or '' }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="max_score" class="form-label fw-bold">
+                                    <i class="bi bi-star-fill"></i> Max Score
+                                </label>
+                                <input type="number" step="0.01" class="form-control" id="max_score" name="max_score" 
+                                       value="{{ form.max_score.data or 100.00 }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="weight" class="form-label fw-bold">
+                            <i class="bi bi-percent"></i> Weight (%)
+                        </label>
+                        <input type="number" step="0.01" class="form-control" id="weight" name="weight" 
+                               value="{{ form.weight.data or '' }}" placeholder="e.g., 30 for 30%">
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label fw-bold">
+                            <i class="bi bi-sticky"></i> Notes
+                        </label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Optional notes...">{{ form.notes.data or '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle"></i> Enter Grade
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header text-white bg-info">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> Existing Grades</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Assessment</th>
+                                <th>Score</th>
+                                <th>Max</th>
+                                <th>Percentage</th>
+                                <th>Weight</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in grades %}
+                            <tr>
+                                <td><strong>{{ grade.assessment_type }}</strong></td>
+                                <td><span class="badge bg-primary">{{ "%.2f"|format(grade.score) }}</span></td>
+                                <td>{{ "%.2f"|format(grade.max_score) }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if (grade.score / grade.max_score * 100) >= 70 else 'warning' if (grade.score / grade.max_score * 100) >= 50 else 'danger' }}">
+                                        {{ "%.2f"|format((grade.score / grade.max_score) * 100) }}%
+                                    </span>
+                                </td>
+                                <td>{{ "%.2f"|format(grade.weight) if grade.weight else '-' }}%</td>
+                                <td><small>{{ grade.graded_date }}</small></td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('instructor.edit_grade', grade_id=grade.grade_id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form method="POST" action="{{ url_for('instructor.delete_grade', grade_id=grade.grade_id) }}" 
+                                              class="d-inline" onsubmit="return confirm('Delete this grade?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+                                    <p class="text-muted">No grades entered yet</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if grades %}
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Current Average:</strong> 
+                            {% set total_score = grades | sum(attribute='score') %}
+                            {% set total_max = grades | sum(attribute='max_score') %}
+                            {% set avg = (total_score / total_max * 100) if total_max > 0 else 0 %}
+                            <span class="badge bg-{{ 'success' if avg >= 70 else 'warning' if avg >= 50 else 'danger' }} fs-6">
+                                {{ "%.2f"|format(avg) }}%
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-muted">
+                                <i class="bi bi-info-circle"></i> Based on {{ grades|length }} assessment(s)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
