@@ -40,7 +40,7 @@
                             </div>
                         </td>
                         <td><span class="badge bg-primary">{{ section.section_number }}</span></td>
-                        <td><i class="bi bi-calendar me-2"></i>{{ section.semester.display_name }}</td>
+                        <td><i class="bi bi-calendar me-2"></i>{{ section.semester.display_name if section.semester else 'N/A' }}</td>
                         <td><i class="bi bi-clock me-2"></i>{{ section.schedule or '-' }}</td>
                         <td><i class="bi bi-geo-alt me-2"></i>{{ section.room or '-' }}</td>
                         <td>

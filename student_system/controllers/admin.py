@@ -18,7 +18,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Forms
 class StudentForm(Form):
     username = StringField('Username', [validators.DataRequired(), validators.Length(min=3, max=50)])
     password = StringField('Password', [validators.DataRequired(), validators.Length(min=6)])
@@ -37,7 +36,6 @@ class CourseForm(Form):
     course_code = StringField('Course Code', [validators.DataRequired()])
     credits = IntegerField('Credits', [validators.DataRequired(), validators.NumberRange(min=1, max=6)], default=3)
     description = TextAreaField('Description', [validators.Optional()])
-    # Note: instructor_id removed - courses don't have instructors in SQL, only sections do
 
 class SemesterForm(Form):
     term_name = StringField('Term Name', [validators.DataRequired()], description='e.g., Fall 2025')
@@ -59,7 +57,6 @@ class EnrollmentForm(Form):
 @admin_bp.route('/dashboard')
 @admin_required
 def dashboard():
-    # Get statistics
     from models import Student, Instructor, Course, Enrollment
     
     total_students = Student.query.count()
@@ -230,7 +227,6 @@ def edit_course(course_id):
     
     form = CourseForm(request.form, obj=course)
     
-    # Pre-populate form with course data
     if not form.course_code.data and course:
         form.course_code.data = course.course_code
     if not form.credits.data and course:
@@ -286,7 +282,6 @@ def create_semester():
 @admin_required
 def create_section():
     form = SectionForm(request.form)
-    # Populate choices
     courses = CourseRepository.get_all(page=1, per_page=1000)
     form.course_id.choices = [(str(c.course_id), f"{c.course_name}") for c in courses.items]
     

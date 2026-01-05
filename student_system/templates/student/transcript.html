@@ -78,8 +78,9 @@
                         </td>
                         <td>
                             {% if item.letter_grade %}
-                                <span class="badge bg-{{ 'success' if item.letter_grade in ['A', 'B'] else 'warning' if item.letter_grade == 'C' else 'danger' }} fs-6">
-                                    {{ item.letter_grade }}
+                                {% set grade = item.letter_grade %}
+                                <span class="badge bg-{{ 'success' if grade in ['AA', 'BA', 'BB'] else 'info' if grade in ['CB', 'CC'] else 'warning' if grade in ['DC', 'DD'] else 'danger' }} fs-6">
+                                    {{ grade }}
                                 </span>
                             {% else %}
                                 <span class="text-muted">N/A</span>

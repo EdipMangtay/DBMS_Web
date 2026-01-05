@@ -33,10 +33,12 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th>Course</th>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
                         <th>Section</th>
                         <th>Semester</th>
                         <th>Instructor</th>
+                        <th>Average Grade</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -45,35 +47,77 @@
                     {% for enrollment in enrollments %}
                     <tr>
                         <td>
-                            <div>
-                                <strong>{{ enrollment.section.course.course_code }}</strong>
-                                <br>
-                                <small class="text-muted">{{ enrollment.section.course.course_name }}</small>
-                            </div>
+                            <span class="badge bg-primary fs-6">
+                                {{ enrollment.section.course.course_code if enrollment.section and enrollment.section.course else 'N/A' }}
+                            </span>
                         </td>
-                        <td><span class="badge bg-secondary">{{ enrollment.section.section_number }}</span></td>
-                        <td>{{ enrollment.section.semester.display_name }}</td>
+                        <td>
+                            <strong>{{ enrollment.section.course.course_name if enrollment.section and enrollment.section.course else 'N/A' }}</strong>
+                            {% if enrollment.section and enrollment.section.course %}
+                            <br>
+                            <small class="text-muted">{{ enrollment.section.course.credits }} Credits</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">
+                                {{ enrollment.section.section_number if enrollment.section else 'N/A' }}
+                            </span>
+                        </td>
+                        <td>
+                            <i class="bi bi-calendar me-1"></i>
+                            {{ enrollment.section.semester.display_name if enrollment.section and enrollment.section.semester else 'N/A' }}
+                        </td>
                         <td>
                             <i class="bi bi-person-circle me-2"></i>
-                            {{ enrollment.section.instructor.full_name if enrollment.section.instructor else 'TBA' }}
+                            {{ enrollment.section.instructor.full_name if enrollment.section and enrollment.section.instructor else 'TBA' }}
+                        </td>
+                        <td>
+                            {% set avg = enrollment_averages.get(enrollment.enrollment_id) %}
+                            {% if avg %}
+                                <strong class="text-primary">{{ "%.2f"|format(avg) }}%</strong>
+                                <br>
+                                <small class="text-muted">
+                                    {% if avg >= 90 %}
+                                        <span class="badge bg-success">AA</span>
+                                    {% elif avg >= 85 %}
+                                        <span class="badge bg-success">BA</span>
+                                    {% elif avg >= 80 %}
+                                        <span class="badge bg-info">BB</span>
+                                    {% elif avg >= 75 %}
+                                        <span class="badge bg-info">CB</span>
+                                    {% elif avg >= 70 %}
+                                        <span class="badge bg-warning">CC</span>
+                                    {% elif avg >= 65 %}
+                                        <span class="badge bg-warning">DC</span>
+                                    {% elif avg >= 60 %}
+                                        <span class="badge bg-warning">DD</span>
+                                    {% elif avg >= 50 %}
+                                        <span class="badge bg-danger">FD</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">FF</span>
+                                    {% endif %}
+                                </small>
+                            {% else %}
+                                <span class="text-muted">No grades yet</span>
+                            {% endif %}
                         </td>
                         <td>
                             <span class="badge bg-{{ 'success' if enrollment.status == 'Active' else 'secondary' }}">
                                 <i class="bi bi-{{ 'check-circle' if enrollment.status == 'Active' else 'x-circle' }}"></i>
-                                {{ enrollment.status }}
+                                {{ enrollment.status or 'Active' }}
                             </span>
                         </td>
                         <td>
                             <a href="{{ url_for('student.transcript') }}" class="btn btn-sm btn-primary">
-                                <i class="bi bi-file-text"></i> View Details
+                                <i class="bi bi-file-text"></i> View Transcript
                             </a>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" class="text-center py-5">
+                        <td colspan="8" class="text-center py-5">
                             <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
-                            <p class="text-muted">No enrollments found</p>
+                            <p class="text-muted">No enrollments found. Please contact administrator to enroll in courses.</p>
                         </td>
                     </tr>
                     {% endfor %}

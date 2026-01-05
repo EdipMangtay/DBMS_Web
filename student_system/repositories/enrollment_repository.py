@@ -10,7 +10,15 @@ class EnrollmentRepository:
     
     @staticmethod
     def get_by_student(student_id, page=1, per_page=20):
-        return Enrollment.query.filter_by(student_id=student_id).join(ClassSection).join(Course).join(Semester).paginate(page=page, per_page=per_page, error_out=False)
+        # Get enrollments with all relationships loaded (except grades - it's dynamic)
+        from sqlalchemy.orm import joinedload
+        return Enrollment.query.filter_by(student_id=student_id)\
+            .options(
+                joinedload(Enrollment.section).joinedload(ClassSection.course),
+                joinedload(Enrollment.section).joinedload(ClassSection.semester),
+                joinedload(Enrollment.section).joinedload(ClassSection.instructor)
+            )\
+            .paginate(page=page, per_page=per_page, error_out=False)
     
     @staticmethod
     def get_all_by_student(student_id):

@@ -1,4 +1,4 @@
-from repositories import SectionRepository, EnrollmentRepository, GradeRepository, AssessmentTypeRepository
+from repositories import SectionRepository, EnrollmentRepository, GradeRepository
 from sqlalchemy import func
 from database import db
 from models import Grade, Enrollment, ClassSection
@@ -14,11 +14,12 @@ class InstructorService:
     
     @staticmethod
     def enter_grade(enrollment_id, assessment_type_id, score):
-        # Check if grade already exists for this assessment type
-        existing = GradeRepository.get_by_assessment_type(enrollment_id, assessment_type_id)
+        # Legacy method - kept for backward compatibility
+        # assessment_type_id is actually assessment_type string now
+        existing = GradeRepository.get_by_assessment_type_name(enrollment_id, str(assessment_type_id))
         if existing:
             return GradeRepository.update(existing.grade_id, score=score)
-        return GradeRepository.create(enrollment_id, assessment_type_id, score)
+        return GradeRepository.create_grade(enrollment_id, str(assessment_type_id), score)
     
     @staticmethod
     def update_grade(grade_id, score=None):

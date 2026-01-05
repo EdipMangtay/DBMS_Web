@@ -12,7 +12,14 @@ class SectionRepository:
     
     @staticmethod
     def get_by_instructor(instructor_id, page=1, per_page=20):
-        return ClassSection.query.filter_by(instructor_id=instructor_id).join(Course).join(Semester).paginate(page=page, per_page=per_page, error_out=False)
+        from sqlalchemy.orm import joinedload
+        return ClassSection.query.filter_by(instructor_id=instructor_id)\
+            .options(
+                joinedload(ClassSection.course),
+                joinedload(ClassSection.semester),
+                joinedload(ClassSection.instructor)
+            )\
+            .paginate(page=page, per_page=per_page, error_out=False)
     
     @staticmethod
     def get_by_course(course_id, page=1, per_page=20):

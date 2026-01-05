@@ -1,6 +1,7 @@
 from database import db
-from models import Grade, Enrollment, AssessmentType
+from models import Grade, Enrollment
 from sqlalchemy import func
+from datetime import date
 
 class GradeRepository:
     @staticmethod
@@ -13,17 +14,27 @@ class GradeRepository:
     
     @staticmethod
     def create(enrollment_id, assessment_type_id, score):
-        # Get assessment type name from ID
-        assessment_type = AssessmentType.query.get(assessment_type_id)
-        if not assessment_type:
-            raise ValueError(f"AssessmentType with id {assessment_type_id} not found")
-        
+        # Legacy method - kept for backward compatibility
+        # assessment_type_id is actually assessment_type string now
+        return GradeRepository.create_grade(
+            enrollment_id=enrollment_id,
+            assessment_type=str(assessment_type_id),
+            score=score,
+            max_score=100.00,
+            weight=None
+        )
+    
+    @staticmethod
+    def create_grade(enrollment_id, assessment_type, score, max_score=100.00, weight=None, notes=None):
+        """Create a grade with string-based assessment_type"""
         grade = Grade(
             enrollment_id=enrollment_id,
-            assessment_type=assessment_type.type_name,  # SQL'de string
+            assessment_type=assessment_type,  # String, not foreign key
             score=score,
-            weight=assessment_type.weight,
-            max_score=100.00
+            max_score=max_score,
+            weight=weight,  # Decimal between 0 and 1
+            notes=notes,
+            graded_date=date.today()
         )
         db.session.add(grade)
         db.session.commit()
@@ -50,11 +61,14 @@ class GradeRepository:
     
     @staticmethod
     def get_by_assessment_type(enrollment_id, assessment_type_id):
-        # Get assessment type name from ID
-        assessment_type = AssessmentType.query.get(assessment_type_id)
-        if not assessment_type:
-            return None
-        return Grade.query.filter_by(enrollment_id=enrollment_id, assessment_type=assessment_type.type_name).first()
+        # Legacy method - kept for backward compatibility
+        # assessment_type_id is actually assessment_type string now
+        return GradeRepository.get_by_assessment_type_name(enrollment_id, str(assessment_type_id))
+    
+    @staticmethod
+    def get_by_assessment_type_name(enrollment_id, assessment_type):
+        """Get grade by enrollment_id and assessment_type (string)"""
+        return Grade.query.filter_by(enrollment_id=enrollment_id, assessment_type=assessment_type).first()
     
     @staticmethod
     def calculate_enrollment_average(enrollment_id):

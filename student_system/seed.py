@@ -1,22 +1,16 @@
-"""
-Seed script to populate the database with initial data.
-Run this after setting up the database and .env file.
-"""
 import sys
 from datetime import date, datetime
 from app import create_app
 from database import db
-from models import User, Student, Instructor, Course, Semester, ClassSection, Enrollment, Grade, Department, AssessmentType
+from models import User, Student, Instructor, Course, Semester, ClassSection, Enrollment, Grade, Department
 from repositories.user_repository import UserRepository
 from repositories.department_repository import DepartmentRepository
-from repositories.assessment_type_repository import AssessmentTypeRepository
 
 def seed_database():
     app = create_app()
     with app.app_context():
         print("Starting database seeding...")
         
-        # Create Departments
         print("Creating departments...")
         dept1 = DepartmentRepository.get_by_id(1)
         if not dept1:
@@ -32,23 +26,7 @@ def seed_database():
         else:
             print(f"Department already exists: {dept2.department_name}")
         
-        # Create Assessment Types
-        print("Creating assessment types...")
-        midterm = AssessmentTypeRepository.get_by_name('Midterm')
-        if not midterm:
-            midterm = AssessmentTypeRepository.create('Midterm', 40.00)
-            print(f"Assessment type created: {midterm.type_name}")
-        else:
-            print(f"Assessment type already exists: {midterm.type_name}")
         
-        final = AssessmentTypeRepository.get_by_name('Final')
-        if not final:
-            final = AssessmentTypeRepository.create('Final', 60.00)
-            print(f"Assessment type created: {final.type_name}")
-        else:
-            print(f"Assessment type already exists: {final.type_name}")
-        
-        # Create Admin user
         print("Creating admin user...")
         admin_user = UserRepository.get_by_username('admin')
         if not admin_user:
@@ -57,7 +35,6 @@ def seed_database():
         else:
             print(f"Admin user already exists: {admin_user.username}")
         
-        # Create Instructor user (username = email for matching)
         print("Creating instructor user...")
         instructor_email = 'ali.yilmaz@isu.edu'
         instructor_user = UserRepository.get_by_username(instructor_email)
@@ -79,29 +56,31 @@ def seed_database():
         else:
             print(f"Instructor already exists: {instructor.full_name}")
         
-        # Create Student user (username = email for matching)
         print("Creating student user...")
-        student_email = 'sojod.ahmed@isu.edu'
-        student_user = UserRepository.get_by_username(student_email)
+        student_username = 'student'
+        student_user = UserRepository.get_by_username(student_username)
         if not student_user:
-            student_user = UserRepository.create(student_email, 'student123', 'Student', email=student_email)
+            student_user = UserRepository.create(student_username, 'student123', 'Student')
             print(f"Student user created: {student_user.username}")
         else:
             print(f"Student user already exists: {student_user.username}")
         
-        student = Student.query.filter_by(student_mail=student_email).first()
+        from repositories.student_repository import StudentRepository
+        student_email = 'student@student.local'
+        student = StudentRepository.get_by_email(student_email)
         if not student:
-            student = Student(
-                student_name='Sojod Ahmed',
-                student_mail=student_email
+            student = StudentRepository.get_by_user_id(student_user.user_id)
+        if not student:
+            student = StudentRepository.create(
+                user_id=student_user.user_id,
+                first_name='Student',
+                last_name='User',
+                email=student_email
             )
-            db.session.add(student)
-            db.session.commit()
             print(f"Student created: {student.student_name}")
         else:
             print(f"Student already exists: {student.student_name}")
         
-        # Create Course
         print("Creating course...")
         course = Course.query.filter_by(course_name='Database Systems').first()
         if not course:
@@ -116,7 +95,6 @@ def seed_database():
         else:
             print(f"Course already exists: {course.course_name}")
         
-        # Create Semester
         print("Creating semester...")
         semester = Semester.query.filter_by(term_name='Fall 2025').first()
         if not semester:
@@ -163,19 +141,32 @@ def seed_database():
             ).first()
             print(f"Enrollment already exists for {student.student_name}")
         
-        # Create Sample Grades
         print("Creating sample grades...")
         from repositories.grade_repository import GradeRepository
-        midterm_grade = GradeRepository.get_by_assessment_type(enrollment.enrollment_id, midterm.assessment_type_id)
+        from models import Grade
+        
+        midterm_grade = GradeRepository.get_by_assessment_type_name(enrollment.enrollment_id, 'Midterm')
         if not midterm_grade:
-            midterm_grade = GradeRepository.create(enrollment.enrollment_id, midterm.assessment_type_id, 92.50)
+            midterm_grade = GradeRepository.create_grade(
+                enrollment_id=enrollment.enrollment_id,
+                assessment_type='Midterm',
+                score=92.50,
+                max_score=100.00,
+                weight=0.40  # 40% as decimal
+            )
             print(f"Midterm grade created: {midterm_grade.score}")
         else:
             print(f"Midterm grade already exists: {midterm_grade.score}")
         
-        final_grade = GradeRepository.get_by_assessment_type(enrollment.enrollment_id, final.assessment_type_id)
+        final_grade = GradeRepository.get_by_assessment_type_name(enrollment.enrollment_id, 'Final')
         if not final_grade:
-            final_grade = GradeRepository.create(enrollment.enrollment_id, final.assessment_type_id, 88.00)
+            final_grade = GradeRepository.create_grade(
+                enrollment_id=enrollment.enrollment_id,
+                assessment_type='Final',
+                score=88.00,
+                max_score=100.00,
+                weight=0.60  # 60% as decimal
+            )
             print(f"Final grade created: {final_grade.score}")
         else:
             print(f"Final grade already exists: {final_grade.score}")
@@ -186,7 +177,7 @@ def seed_database():
         print("\nDefault credentials:")
         print("Admin:     username=admin, password=admin123")
         print("Instructor: username=ali.yilmaz@isu.edu, password=instructor123")
-        print("Student:   username=sojod.ahmed@isu.edu, password=student123")
+        print("Student:   username=student, password=student123")
         print("\nPlease change these passwords after first login!")
 
 if __name__ == '__main__':

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Student System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-8">
+        <div class="text-center mb-5">
+            <h2><i class="bi bi-mortarboard-fill"></i> Student Management System</h2>
+            <p class="text-muted">Select your login portal</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm" style="border: 2px solid #667eea;">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-mortarboard-fill" style="font-size: 3rem; color: #667eea;"></i>
+                        </div>
+                        <h4 class="card-title">Student Portal</h4>
+                        <p class="card-text text-muted">Access your courses, grades, and transcript</p>
+                        <a href="{{ url_for('auth.student_login') }}" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                            <i class="bi bi-box-arrow-in-right"></i> Student Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm" style="border: 2px solid #f5576c;">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-shield-lock-fill" style="font-size: 3rem; color: #f5576c;"></i>
+                        </div>
+                        <h4 class="card-title">Admin Portal</h4>
+                        <p class="card-text text-muted">Manage students, courses, and system settings</p>
+                        <a href="{{ url_for('auth.admin_login') }}" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none;">
+                            <i class="bi bi-box-arrow-in-right"></i> Admin Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm" style="border: 2px solid #4facfe;">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-person-badge-fill" style="font-size: 3rem; color: #4facfe;"></i>
+                        </div>
+                        <h4 class="card-title">Instructor Portal</h4>
+                        <p class="card-text text-muted">Manage sections, enter grades, and view statistics</p>
+                        <a href="{{ url_for('auth.instructor_login') }}" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none;">
+                            <i class="bi bi-box-arrow-in-right"></i> Instructor Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

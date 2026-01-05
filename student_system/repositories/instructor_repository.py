@@ -16,6 +16,11 @@ class InstructorRepository:
         return Instructor.query.filter_by(email=email).first()
     
     @staticmethod
+    def get_by_user_id(user_id):
+        """Get instructor by user_id (for authentication)"""
+        return Instructor.query.filter_by(user_id=user_id).first()
+    
+    @staticmethod
     def get_all(page=1, per_page=20):
         return Instructor.query.paginate(page=page, per_page=per_page, error_out=False)
     

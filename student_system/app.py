@@ -16,10 +16,8 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Initialize extensions
     db.init_app(app)
     
-    # Setup logging
     if not app.debug:
         if not os.path.exists('logs'):
             os.mkdir('logs')
@@ -32,7 +30,6 @@ def create_app():
         app.logger.setLevel(logging.INFO)
         app.logger.info('Student System startup')
     
-    # Flask-Login setup
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
@@ -43,14 +40,12 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
     
-    # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(instructor_bp, url_prefix='/instructor')
     app.register_blueprint(student_bp, url_prefix='/student')
     app.register_blueprint(reports_bp, url_prefix='/reports')
     
-    # Root route
     @app.route('/')
     def index():
         from flask import redirect, url_for
@@ -62,7 +57,7 @@ def create_app():
                 return redirect(url_for('instructor.dashboard'))
             elif current_user.role == 'Student':
                 return redirect(url_for('student.dashboard'))
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('auth.login_selector'))
     
     return app
 

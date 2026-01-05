@@ -17,6 +17,11 @@ class StudentRepository:
         return Student.query.filter_by(student_mail=email).first()
     
     @staticmethod
+    def get_by_user_id(user_id):
+        """Get student by user_id (for authentication)"""
+        return Student.query.filter_by(user_id=user_id).first()
+    
+    @staticmethod
     def get_all(page=1, per_page=20):
         return Student.query.paginate(page=page, per_page=per_page, error_out=False)
     

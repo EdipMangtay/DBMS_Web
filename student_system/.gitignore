@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment (opsiyonel - eğer yüklemek istemiyorsanız)
+# venv/
+# env/
+# ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database dumps (eğer yüklemek istiyorsanız bunu kaldırın)
+# *.sql
+
+# Environment variables (eğer .env'i yüklemek istiyorsanız bunu kaldırın)
+# .env
+

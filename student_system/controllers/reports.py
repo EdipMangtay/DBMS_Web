@@ -18,7 +18,6 @@ def course_performance():
 @reports_bp.route('/student-transcript/<int:student_id>')
 @login_required
 def student_transcript(student_id):
-    # Admin can view any student, students can only view their own
     if current_user.role == 'Student':
         student = StudentRepository.get_by_user_email(current_user.username) if current_user.username else None
         if not student or student.student_id != student_id:

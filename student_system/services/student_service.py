@@ -29,13 +29,26 @@ class StudentService:
         
         for enrollment in enrollments:
             section = enrollment.section
+            if not section:
+                continue
+            
             course = section.course
+            if not course:
+                continue
+            
             semester = section.semester
             
-            # Calculate student average
+            semester_name = 'N/A'
+            if semester:
+                if hasattr(semester, 'term_name'):
+                    semester_name = semester.term_name
+                elif hasattr(semester, 'semester_name') and hasattr(semester, 'year'):
+                    semester_name = f"{semester.semester_name} {semester.year}"
+                elif hasattr(semester, 'display_name'):
+                    semester_name = semester.display_name
+            
             avg = GradeRepository.calculate_enrollment_average(enrollment.enrollment_id)
             
-            # Calculate class average (all students in this section)
             section_enrollments = Enrollment.query.filter_by(section_id=section.section_id).all()
             section_averages = []
             for sec_enr in section_enrollments:
@@ -45,14 +58,13 @@ class StudentService:
             
             class_avg = sum(section_averages) / len(section_averages) if section_averages else None
             
-            # Calculate letter grade
             letter_grade = StudentService.calculate_letter_grade(avg) if avg else None
             
             transcript.append({
-                'course_code': course.course_code,
-                'course_name': course.course_name,
-                'credits': course.credits,
-                'semester': semester.term_name,
+                'course_code': course.course_code if course else 'N/A',
+                'course_name': course.course_name if course else 'N/A',
+                'credits': course.credits if course else 0,
+                'semester': semester_name,
                 'student_average': float(avg) if avg else None,
                 'class_average': float(class_avg) if class_avg else None,
                 'letter_grade': letter_grade

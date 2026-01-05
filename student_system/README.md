@@ -1,282 +1,298 @@
 # Student System - Flask Web Application
 
-A production-ready web application for managing a student information system with role-based access control (Admin, Instructor, Student).
+Öğrenci ve Not Yönetim Sistemi - Role-based access control ile (Admin, Instructor, Student)
 
-## Tech Stack
+**🚀 GitHub'dan indirip direkt çalıştırın!** Windows için `setup.bat`, Linux/Mac için `./setup.sh`
 
-- **Framework**: Flask 3.0.0
-- **ORM**: SQLAlchemy 2.0.23
-- **Database**: MySQL (pymysql driver)
-- **Forms**: WTForms (Flask-WTF)
-- **Authentication**: Flask-Login
-- **Frontend**: Bootstrap 5
-- **Configuration**: python-dotenv
+## 📋 Özellikler
 
-## Project Structure
+- ✅ **Otomatik Kurulum**: Tek komutla tüm bağımlılıklar yüklenir
+- ✅ **SQLite & MySQL Desteği**: İki veritabanı seçeneği (varsayılan: SQLite)
+- ✅ **Otomatik Veritabanı Oluşturma**: SQL dump'tan otomatik import
+- ✅ **Hazır Veriler**: Örnek öğrenci, öğretmen, ders ve not verileri
+- ✅ **Role-Based Access**: Admin, Instructor, Student rolleri
+- ✅ **Responsive Design**: Bootstrap 5 ile modern arayüz
 
-```
-student_system/
-├── app.py                 # Flask application factory
-├── config.py              # Configuration settings
-├── requirements.txt       # Python dependencies
-├── seed.py                # Database seeding script
-├── .env.example          # Environment variables template
-├── controllers/          # Route handlers (blueprints)
-│   ├── auth.py
-│   ├── admin.py
-│   ├── instructor.py
-│   ├── student.py
-│   └── reports.py
-├── models/               # SQLAlchemy models
-│   ├── user.py
-│   ├── student.py
-│   ├── instructor.py
-│   ├── course.py
-│   ├── semester.py
-│   ├── section.py
-│   ├── enrollment.py
-│   └── grade.py
-├── repositories/         # Database operations
-│   ├── user_repository.py
-│   ├── student_repository.py
-│   ├── instructor_repository.py
-│   ├── course_repository.py
-│   ├── semester_repository.py
-│   ├── section_repository.py
-│   ├── enrollment_repository.py
-│   └── grade_repository.py
-├── services/            # Business logic
-│   ├── auth_service.py
-│   ├── admin_service.py
-│   ├── instructor_service.py
-│   ├── student_service.py
-│   └── report_service.py
-├── templates/          # Jinja2 templates
-│   ├── base.html
-│   ├── auth/
-│   ├── admin/
-│   ├── instructor/
-│   ├── student/
-│   └── reports/
-└── static/            # Static files (CSS, JS, images)
-```
+## 🚀 Hızlı Başlangıç
 
-## Setup Instructions
+### Windows Kullanıcıları:
 
-### 1. Prerequisites
+1. **Projeyi indirin** (GitHub'dan ZIP olarak veya `git clone`)
+2. **setup.bat** dosyasına çift tıklayın
+3. Kurulum tamamlanana kadar bekleyin
+4. **run.bat** dosyasına çift tıklayın
+5. Tarayıcıda açın: **http://127.0.0.1:5000**
 
-- Python 3.8 or higher
-- MySQL Server (running on localhost:3306)
-- Existing database named "StudentSystem"
-
-### 2. Create Virtual Environment
+### Linux/Mac Kullanıcıları:
 
 ```bash
-# Windows
+chmod +x setup.sh run.sh
+./setup.sh
+./run.sh
+```
+
+**Hepsi bu kadar!** 🎉
+
+## 🔑 Giriş Bilgileri
+
+Tüm roller için aynı kullanıcı adı ve şifre:
+- **Kullanıcı Adı**: `edip`
+- **Şifre**: `edip123`
+- **Roller**: Student, Admin, Instructor (giriş sayfasından seçin)
+
+## 📦 Kurulum Detayları
+
+### Otomatik Kurulum Ne Yapar?
+
+1. **Virtual Environment Oluşturur**: Python bağımlılıklarını izole eder
+2. **Paketleri Yükler**: `requirements.txt`'deki tüm paketleri kurar
+3. **Veritabanı Hazırlar**:
+   - **SQLite Modu (Varsayılan)**: `studentsystem_full.sql` dosyasını SQLite'a import eder
+   - **MySQL Modu**: MySQL sunucusuna bağlanıp veritabanı oluşturur ve import eder
+4. **.env Dosyası Oluşturur**: Gerekli ayarları yapar
+
+### Veritabanı Seçimi
+
+**Varsayılan: SQLite** (MySQL gerekmez, dosya tabanlı)
+
+SQLite kullanmak için `.env` dosyasında:
+```
+DB_TYPE=sqlite
+DATABASE_URL=sqlite:///studentsystem.db
+```
+
+MySQL kullanmak için `.env` dosyasında:
+```
+DB_TYPE=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=studentsystem
+```
+
+### Manuel Kurulum (İsteğe Bağlı)
+
+Eğer otomatik kurulum çalışmazsa:
+
+#### 1. Python ve Gereksinimler
+
+- Python 3.8 veya üzeri
+- MySQL Server (sadece MySQL modu için)
+
+#### 2. Virtual Environment
+
+**Windows:**
+```bash
 python -m venv venv
 venv\Scripts\activate
+```
 
-# Linux/Mac
+**Linux/Mac:**
+```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+#### 3. Paketleri Yükleyin
 
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment Variables
+#### 4. Veritabanını Hazırlayın
 
-Copy `.env.example` to `.env` and update with your database credentials:
-
+**SQLite (Önerilen - Kolay):**
 ```bash
-# Windows
-copy .env.example .env
-
-# Linux/Mac
-cp .env.example .env
+python sql_to_sqlite.py
 ```
 
-Edit `.env` file:
-```
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=YOUR_PASSWORD_HERE
-DB_NAME=StudentSystem
-SECRET_KEY=change-me-to-a-random-secret-key
-```
-
-**Important**: Replace `YOUR_PASSWORD_HERE` with your actual MySQL root password and change `SECRET_KEY` to a random secret string.
-
-### 5. Database Setup
-
-The application uses SQLAlchemy reflection to work with your existing database schema. Ensure your MySQL database "StudentSystem" exists and contains the necessary tables:
-
-- users
-- students
-- instructors
-- courses
-- semesters
-- sections
-- enrollments
-- grades
-
-If the tables don't exist, you may need to create them or adjust the models to match your schema.
-
-### 6. Seed the Database (Optional)
-
-To populate the database with sample data:
-
+**MySQL:**
 ```bash
-python seed.py
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS studentsystem;"
+python import_sql.py
 ```
 
-This will create:
-- 1 Admin user (username: `admin`, password: `admin123`)
-- 1 Instructor user (username: `instructor1`, password: `instructor123`)
-- 1 Student user (username: `student1`, password: `student123`)
-- 1 Course, Semester, Section
-- 1 Enrollment with sample grades
-
-**⚠️ Security Note**: Change default passwords immediately after first login!
-
-### 7. Run the Application
-
-```bash
-flask --app app run --debug
-```
-
-Or:
+#### 5. Uygulamayı Çalıştırın
 
 ```bash
 python app.py
 ```
 
-The application will be available at `http://127.0.0.1:5000`
+Tarayıcıda açın: **http://127.0.0.1:5000**
 
-## Features
+## 📁 Proje Yapısı
 
-### Admin Dashboard
-- **CRUD Operations**:
-  - Manage Students
-  - Manage Instructors
-  - Manage Courses
-- **System Management**:
-  - Create Semesters
-  - Create Sections
-  - Enroll Students into Sections
-- **Reports**: View course performance reports
-
-### Instructor Dashboard
-- View assigned course sections
-- Manage student grades (enter/update grades per assessment type)
-- View course and section statistics (average, max, min grades, student count)
-
-### Student Dashboard
-- View enrolled courses
-- View transcript with:
-  - Course averages vs class averages
-  - Letter grades
-  - Overall GPA
-
-### Reports
-- Course Performance Report (all courses with statistics)
-- Student Transcript Details
-
-## Creating an Admin User
-
-### Method 1: Using Seed Script
-Run the seed script as described above.
-
-### Method 2: Using Python CLI
-```python
-from app import create_app
-from repositories.user_repository import UserRepository
-
-app = create_app()
-with app.app_context():
-    user = UserRepository.create('admin', 'your_password', 'Admin')
-    print(f"Admin user created: {user.username}")
+```
+student_system/
+├── app.py                    # Flask uygulama
+├── config.py                  # Yapılandırma (SQLite/MySQL desteği)
+├── requirements.txt           # Python bağımlılıkları
+├── .env                       # Ortam değişkenleri (otomatik oluşturulur)
+├── setup.bat                  # Windows otomatik kurulum
+├── setup.sh                   # Linux/Mac otomatik kurulum
+├── run.bat                    # Windows çalıştırma
+├── run.sh                     # Linux/Mac çalıştırma
+├── setup_database.py         # Veritabanı oluşturma
+├── import_sql.py              # MySQL import scripti
+├── sql_to_sqlite.py          # SQL dump'tan SQLite'a import
+├── mysql_to_sqlite.py        # MySQL'den SQLite'a export
+├── studentsystem_full.sql    # Veritabanı dump (projede mevcut)
+├── studentsystem.db          # SQLite veritabanı (otomatik oluşturulur)
+├── controllers/              # Route handlers
+├── models/                   # SQLAlchemy modelleri
+├── repositories/             # Veritabanı işlemleri
+├── services/                 # İş mantığı
+└── templates/                # HTML şablonları
 ```
 
-### Method 3: Direct Database Insert
-```sql
-INSERT INTO users (username, password_hash, role) 
-VALUES ('admin', '<hashed_password>', 'Admin');
-```
+## 🎯 Kullanım Senaryoları
 
-Note: For method 3, you'll need to hash the password using Werkzeug's `generate_password_hash()`.
+### Senaryo 1: GitHub'dan İndirip Çalıştırma
 
-## Database Integration
+1. GitHub'dan ZIP indirin
+2. Klasöre çıkartın
+3. `setup.bat` (Windows) veya `./setup.sh` (Linux/Mac) çalıştırın
+4. `run.bat` (Windows) veya `./run.sh` (Linux/Mac) çalıştırın
+5. Tarayıcıda `http://127.0.0.1:5000` açın
 
-The application is designed to work with an existing MySQL database. It:
+**Sonuç**: SQLite modunda otomatik çalışır, MySQL gerekmez!
 
-- Uses SQLAlchemy reflection to map existing tables
-- Attempts to use stored procedures/functions if they exist:
-  - `GetCourseStatistics(course_id)`
-  - `CalculateLetterGrade(score)`
-- Attempts to use views if they exist:
-  - `View_CoursePerformanceReport`
-  - `View_StudentTranscriptDetails`
-  - `StudentAverage`
+### Senaryo 2: MySQL Kullanma
 
-If these database objects don't exist, the application falls back to computing results using SQLAlchemy queries.
+1. `.env` dosyasını düzenleyin:
+   ```
+   DB_TYPE=mysql
+   DB_PASSWORD=your_mysql_password
+   ```
+2. MySQL sunucusunun çalıştığından emin olun
+3. `setup.bat` veya `./setup.sh` çalıştırın
+4. Otomatik olarak MySQL'e bağlanır ve veritabanı oluşturur
 
-## Security Features
+### Senaryo 3: Mevcut MySQL Veritabanından SQLite'a Geçiş
 
-- Password hashing using Werkzeug
-- CSRF protection via Flask-WTF
-- Role-based access control
-- Parameterized queries (SQL injection prevention)
-- Environment variables for sensitive data
-- Input validation on all forms
+1. MySQL modunda çalıştırın ve verileri doldurun
+2. `python mysql_to_sqlite.py` çalıştırın
+3. `.env` dosyasında `DB_TYPE=sqlite` yapın
+4. Uygulamayı yeniden başlatın
 
-## Logging
+## 🔧 Sorun Giderme
 
-Application logs are written to `logs/student_system.log` with rotation (max 10MB per file, 10 backups).
+### "Python bulunamadı" Hatası
 
-## Troubleshooting
+- Python 3.8+ yüklü olduğundan emin olun
+- PATH'e eklendiğinden emin olun
+- Test: `python --version` veya `python3 --version`
 
-### Database Connection Issues
-- Verify MySQL is running
-- Check `.env` file has correct credentials
-- Ensure database "StudentSystem" exists
-- Test connection: `mysql -u root -p -h 127.0.0.1 StudentSystem`
-
-### Import Errors
-- Ensure virtual environment is activated
-- Verify all dependencies are installed: `pip install -r requirements.txt`
-- Check Python path includes the project directory
-
-### Template Not Found
-- Ensure you're running from the `student_system/` directory
-- Check that `templates/` folder exists with all template files
-
-## Development
-
-To run in development mode with auto-reload:
+### "Paketler yüklenemedi" Hatası
 
 ```bash
-flask --app app run --debug
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-## Production Deployment
+### "Veritabanı bağlantı hatası" (MySQL)
 
-For production:
-1. Set `FLASK_ENV=production` in `.env`
-2. Use a production WSGI server (e.g., Gunicorn)
-3. Set a strong `SECRET_KEY` in `.env`
-4. Configure proper database connection pooling
-5. Set up HTTPS
-6. Configure proper logging
+- MySQL sunucusunun çalıştığından emin olun
+- `.env` dosyasındaki şifreyi kontrol edin
+- Test: `mysql -u root -p -h 127.0.0.1`
 
-## License
+### "SQLite import hatası"
 
-This project is provided as-is for educational purposes.
+- `studentsystem_full.sql` dosyasının mevcut olduğundan emin olun
+- Dosya izinlerini kontrol edin
+- Alternatif: MySQL moduna geçin (otomatik)
 
+### Port 5000 Kullanımda
 
+`app.py` dosyasında port numarasını değiştirin:
+```python
+app.run(debug=True, port=5001)
+```
 
+### Virtual Environment Hatası
 
+- Virtual environment'ın aktif olduğundan emin olun
+- Windows: `venv\Scripts\activate`
+- Linux/Mac: `source venv/bin/activate`
+
+## 📊 Veritabanı İçeriği
+
+Projede `studentsystem_full.sql` dosyası ile birlikte gelir:
+- ✅ 11 ders (courses)
+- ✅ 10+ öğrenci (students)
+- ✅ 11+ öğretmen (instructors)
+- ✅ 12 kayıt (enrollments)
+- ✅ 12 not (grades)
+- ✅ Hazır kullanıcılar (edip_student, edip_admin, edip_instructor)
+
+## 🎓 Özellikler
+
+### Admin Dashboard
+- Öğrenci yönetimi (CRUD)
+- Öğretmen yönetimi (CRUD)
+- Ders yönetimi (CRUD)
+- Dönem oluşturma
+- Bölüm oluşturma
+- Öğrenci kayıt işlemleri
+- Raporlar (ders performansı)
+
+### Instructor Dashboard
+- Atanan bölümleri görüntüleme
+- Öğrenci notlarını girme/güncelleme
+- Bölüm istatistikleri (ortalama, min, max)
+- Ders istatistikleri
+
+### Student Dashboard
+- Kayıtlı dersleri görüntüleme
+- Not ortalamalarını görüntüleme
+- Transkript görüntüleme
+- Harf notları
+
+## 🔒 Güvenlik
+
+- Password hashing (Werkzeug)
+- CSRF koruması (Flask-WTF)
+- Role-based access control
+- SQL injection koruması
+- Ortam değişkenleri ile hassas veriler
+
+## 📝 Logging
+
+Uygulama logları `logs/student_system.log` dosyasına yazılır (maksimum 10MB, 10 yedek).
+
+## 🚀 Production Deployment
+
+Production için:
+
+1. `.env` dosyasında `FLASK_ENV=production` ayarlayın
+2. Güçlü bir `SECRET_KEY` belirleyin
+3. Production WSGI sunucusu kullanın (örn: Gunicorn)
+4. HTTPS yapılandırın
+5. Veritabanı bağlantı havuzu yapılandırın
+
+## 📄 Lisans
+
+Bu proje eğitim amaçlı olarak sağlanmıştır.
+
+## 💡 İpuçları
+
+- **İlk Kurulum**: SQLite modunu kullanın (MySQL gerekmez)
+- **Veri Yedekleme**: `studentsystem.db` dosyasını yedekleyin
+- **MySQL'e Geçiş**: `.env` dosyasında `DB_TYPE=mysql` yapın
+- **SQLite'a Geçiş**: `python mysql_to_sqlite.py` çalıştırın
+
+## 🆘 Yardım
+
+Sorun yaşarsanız:
+1. `logs/student_system.log` dosyasını kontrol edin
+2. Virtual environment'ın aktif olduğundan emin olun
+3. Tüm bağımlılıkların yüklü olduğundan emin olun
+4. Veritabanı bağlantı ayarlarını kontrol edin
+
+---
+
+**Hazırlayan**: Student System Development Team  
+**Versiyon**: 1.0  
+**Son Güncelleme**: 2026

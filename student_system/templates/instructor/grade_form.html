@@ -53,8 +53,9 @@
                         <label for="weight" class="form-label fw-bold">
                             <i class="bi bi-percent"></i> Weight (%)
                         </label>
-                        <input type="number" step="0.01" class="form-control" id="weight" name="weight" 
-                               value="{{ form.weight.data or grade.weight or '' }}">
+                        <input type="number" step="0.01" min="0" max="100" class="form-control" id="weight" name="weight" 
+                               value="{% if form.weight.data %}{{ form.weight.data * 100 }}{% elif grade.weight %}{{ grade.weight * 100 }}{% endif %}">
+                        <small class="text-muted">Enter as percentage: 30 = 30%, 50 = 50%</small>
                     </div>
                     <div class="mb-3">
                         <label for="notes" class="form-label fw-bold">

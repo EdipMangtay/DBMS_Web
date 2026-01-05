@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Instructor Login - Student System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <h3 class="mb-0"><i class="bi bi-person-badge-fill"></i> Instructor Portal</h3>
+                <p class="mb-0 mt-2 opacity-75">Sign in to manage your sections and grades</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-4">
+                        <label for="username" class="form-label fw-bold">
+                            <i class="bi bi-person-badge"></i> Instructor Username
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="username" name="username" 
+                               placeholder="Enter your instructor username" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-bold">
+                            <i class="bi bi-lock"></i> Password
+                        </label>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" 
+                               placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-lg" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none;">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In as Instructor
+                    </button>
+                </form>
+                <div class="mt-3 text-center">
+                    <small class="text-muted">
+                        <a href="{{ url_for('auth.student_login') }}" class="text-decoration-none">Student Login</a> | 
+                        <a href="{{ url_for('auth.admin_login') }}" class="text-decoration-none">Admin Login</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
